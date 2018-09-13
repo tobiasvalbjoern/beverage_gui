@@ -25,13 +25,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 
-public class Beverage_gui extends JFrame {
+public class Beverage_gui extends JFrame implements MouseListener, ActionListener  {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField username_input;
 	private JTextField beverage_input;
 	private JTable table;
+	private DefaultTableModel model;
 
 	/**
 	 * Launch the application.
@@ -57,23 +58,21 @@ public class Beverage_gui extends JFrame {
 		}
 		return true;
 	}
+
 	/**
 	 * Create the frame.
 	 */
 	public Beverage_gui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 
-		JPanel panel = new JPanel();
-		contentPane.add(panel);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
 		JPanel input_panel = new JPanel();
-		panel.add(input_panel);
+		contentPane.add(input_panel);
 
 		JLabel lblUsername = new JLabel("Username");
 		input_panel.add(lblUsername);
@@ -84,120 +83,110 @@ public class Beverage_gui extends JFrame {
 
 		JLabel lblBeverage = new JLabel("Beverage");
 		input_panel.add(lblBeverage);
-
 		beverage_input = new JTextField();
 		input_panel.add(beverage_input);
 		beverage_input.setColumns(10);
-
+		
 		JButton btnNewButton = new JButton("Apply");
 		input_panel.add(btnNewButton);
-
-		JPanel table_panel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) table_panel.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		contentPane.add(table_panel);
+		btnNewButton.addActionListener(this);
 
 		//use a table model to work with the tabel dynamically.
-		DefaultTableModel model = new DefaultTableModel();
-
-		//use the model on the table
-		table = new JTable(model);
-		table_panel.add(table);
-
+		model = new DefaultTableModel();
 		//adding the first column.
 		model.addColumn("name\\beverage");
-
+		
+		//create new table, that uses the model
+		table = new JTable(model);
+		//Add the table to a scrollpane.
+		JScrollPane sp=new JScrollPane(table);
+		contentPane.add(sp);
 		//enabling the selection of a single cell
 		table.setCellSelectionEnabled(true);  
-
-		//This mouseListener is used with the table to handle mouse clicks
-		MouseListener mouseListener = new MouseAdapter() {
-			//identifying mouse click
-			public void mousePressed(MouseEvent mouseEvent) {
-				int modifiers = mouseEvent.getModifiers();
-				if ((modifiers & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) {
-					//System.out.println("Left button pressed.");
-				}
-				if ((modifiers & InputEvent.BUTTON2_MASK) == InputEvent.BUTTON2_MASK) {
-					//System.out.println("Middle button pressed.");
-				}
-				if ((modifiers & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK) {
-					//System.out.println("Right button pressed.");
-				}
-			}
-
-
-			public void mouseReleased(MouseEvent mouseEvent) {
-				if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-					//System.out.println("Left button released.");
-					int row = table.rowAtPoint(mouseEvent.getPoint());
-					int col = table.columnAtPoint(mouseEvent.getPoint());
-
-					//Get the value at the clicked cell.
-					String s=(String)table.getValueAt(row, col);
-
-					//When no data has been entered. The first click. 
-					if(s == null) { 
-						table.setValueAt("1", row, col);
-					}
-
-					//We don't want to change the name or beverage.
-					if(isNumeric(s)) {
-						//change string to int
-						int value=Integer.parseInt(s);
-						value++;
-						table.setValueAt(Integer.toString(value), row, col);
-					}
-				}
-				if (SwingUtilities.isMiddleMouseButton(mouseEvent)) {
-					//System.out.println("Middle button released.");
-				}
-				if (SwingUtilities.isRightMouseButton(mouseEvent)) {
-					//System.out.println("Right button released.");
-					int row = table.rowAtPoint(mouseEvent.getPoint());
-					int col = table.columnAtPoint(mouseEvent.getPoint());
-					String s=(String)table.getValueAt(row, col);
-
-					if(isNumeric(s)) {
-						int value=Integer.parseInt(s);
-						//no minus numbers
-						if(value!=0) {
-							value--;
-							table.setValueAt(Integer.toString(value), row, col);
-						}
-					}
-
-				}
-
-			}   
-		};
-
 		//add the mouselistener to the table. 
-		table.addMouseListener(mouseListener);
+		table.addMouseListener(this);
+	}
 
-		//Add the table to a scrollpane.
-		JScrollPane sp=new JScrollPane(table);    
-		table_panel.add(sp);  
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
 
-		btnNewButton.addActionListener(new ActionListener() {
+	}
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
+	@Override
+	public void mousePressed(MouseEvent mouseEvent) {
+	}
 
+	@Override
+	public void mouseReleased(MouseEvent mouseEvent) {
+		// TODO Auto-generated method stub
+		if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+			//System.out.println("Left button released.");
+			int row = table.rowAtPoint(mouseEvent.getPoint());
+			int col = table.columnAtPoint(mouseEvent.getPoint());
 
-				if(!username_input.getText().equals("")) {
-					String username=username_input.getText();
-					model.addRow(new Object[] {username});
-					username_input.setText("");
-				}
-				if(!beverage_input.getText().equals("")) {
-					String beverage=beverage_input.getText();
-					model.addColumn(beverage);
-					beverage_input.setText("");
-				}
+			//Get the value at the clicked cell.
+			String s=(String)table.getValueAt(row, col);
 
+			//When no data has been entered. The first click. 
+			if(s == null) { 
+				table.setValueAt("1", row, col);
 			}
-		});
+
+			//We don't want to change the name or beverage.
+			if(isNumeric(s)) {
+				//change string to int
+				int value=Integer.parseInt(s);
+				value++;
+				table.setValueAt(Integer.toString(value), row, col);
+			}
+		}
+		if (SwingUtilities.isMiddleMouseButton(mouseEvent)) {
+			//System.out.println("Middle button released.");
+		}
+		if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+			//System.out.println("Right button released.");
+			int row = table.rowAtPoint(mouseEvent.getPoint());
+			int col = table.columnAtPoint(mouseEvent.getPoint());
+			String s=(String)table.getValueAt(row, col);
+
+			if(isNumeric(s)) {
+				int value=Integer.parseInt(s);
+				//no minus numbers
+				if(value!=0) {
+					value--;
+					table.setValueAt(Integer.toString(value), row, col);
+				}
+			}
+
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(!username_input.getText().equals("")) {
+			String username=username_input.getText();
+			model.addRow(new Object[] {username});
+			username_input.setText("");
+		}
+		if(!beverage_input.getText().equals("")) {
+			String beverage=beverage_input.getText();
+			model.addColumn(beverage);
+			beverage_input.setText("");
+		}
 	}
 }
 
