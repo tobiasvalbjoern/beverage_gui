@@ -1,11 +1,12 @@
 package beverage_gui;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class Beverages {
 	private HashMap<String,Double> PriceBeverage;
 	
-	Beverages() {
+	public Beverages() {
 		PriceBeverage=new HashMap<String,Double>();
 		PriceBeverage.put("øl", 10.0);
 		PriceBeverage.put("vin", 12.5);
@@ -13,23 +14,29 @@ public class Beverages {
 		PriceBeverage.put("vodka", 10.0);
 	}
 	
-	public Double calculateBill(HashMap<String,Integer> bill) {
-		Double price=0.0;
-		try {		
-			for (String k : bill.keySet())
-	        {   
-	            Double priceBeverage=PriceBeverage.get(k);
-	            Integer AmountBeverage=bill.get(k);
-	            Double AmountBeverageDouble=(double)(AmountBeverage.intValue());
-	            price+=priceBeverage*AmountBeverageDouble;
-	            
-	        } 
-	         
-	    } catch (NullPointerException np) { 
-	    	
-	    }
-			
+	public Double getBeveragePrice(String beverage) {
+		Double price = 0.0;
+		price=PriceBeverage.get(beverage);
 		return price;
+	}   
+
+	public void changeBeveragePrice(String beverage, int amount) {
+		PriceBeverage.put(beverage, (double)amount);
+	}
+	
+	public void addBeverage(String beverage, double amount) {
+		PriceBeverage.put(beverage, amount);
+		
+	}
+
+	public Set<String> getBeverageKeys() {
+		return PriceBeverage.keySet();
+	}
+
+	public void removeBeverage(String beverage) {
+		PriceBeverage.remove(beverage);
 	}
 	
 }
+
+

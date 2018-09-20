@@ -13,26 +13,30 @@ public class Person {
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
 	
-	
-	
 	public void addToBill(String beverage, int amount) {
-		try {
+	
 		this.bill.put(beverage, amount);
-		}catch(NullPointerException np){
-			
-		}
 	}
+	
 	
 	public Double getBill() {
 		Beverages beverage = new Beverages();
-		Double price=beverage.calculateBill(bill);
-		return price;
+		
+		Double price=0.0;
+			for (String k : bill.keySet())
+		        {   
+				//obs this can be null, if k is a name not existing in the list
+				Double priceBeverage=beverage.getBeveragePrice(k);
+				Integer AmountBeverage=bill.get(k);
+				Double AmountBeverageDouble=(double)(AmountBeverage.intValue());
+				price+=priceBeverage*AmountBeverageDouble;
+		        } 
+			return price;
 	}
-	
-	
-	
 }
+
